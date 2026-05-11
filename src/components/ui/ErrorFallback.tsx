@@ -1,11 +1,8 @@
 import { Button } from './Button';
+import type { FallbackProps } from 'react-error-boundary';
 
-interface ErrorFallbackProps {
-  error: Error;
-  resetErrorBoundary: () => void;
-}
-
-export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
+export function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
   return (
     <div className="flex flex-col items-center justify-center py-16 px-8 text-center animate-fade-in">
       <div className="h-16 w-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
@@ -32,7 +29,7 @@ export function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps)
         An unexpected error occurred. Please try again.
       </p>
       <pre className="text-xs text-red-400 bg-red-500/5 border border-red-500/10 rounded-lg p-3 max-w-md overflow-auto mb-6">
-        {error.message}
+        {errorMessage}
       </pre>
       <Button variant="secondary" onClick={resetErrorBoundary}>
         Try again

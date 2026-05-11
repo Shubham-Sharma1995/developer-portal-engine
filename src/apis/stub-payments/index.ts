@@ -10,7 +10,7 @@ export const stubPaymentsDefinition: ApiDefinition = {
   id: 'Demo-payments',
   name: 'Demo Payments',
   version: '1.0.0',
-  spec,
+  spec: spec as unknown as OpenAPISpec,
   baseUrl: 'https://api.Demo.dev/v1',
   environments: {
     sandbox: 'https://sandbox.api.Demo.dev/v1',

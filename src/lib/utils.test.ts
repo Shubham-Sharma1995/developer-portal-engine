@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { maskApiKey, formatBytes, formatLatency, getStatusColor } from '../utils';
+import { maskApiKey, formatBytes, formatLatency, getStatusColor } from './utils';
 
 describe('Utility Functions', () => {
   describe('maskApiKey', () => {

@@ -1,0 +1,816 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PokéAPI",
+    "version": "2.0.0",
+    "description": "The RESTful Pokémon API. All the Pokémon data you'll ever need in one place, easily accessible through a modern free RESTful API."
+  },
+  "servers": [
+    {
+      "url": "https://pokeapi.co/api/v2",
+      "description": "Production"
+    }
+  ],
+  "tags": [
+    { "name": "Pokémon", "description": "Pokémon species and form data" },
+    { "name": "Berries", "description": "Berry items and their effects" },
+    { "name": "Moves", "description": "Pokémon moves and their details" },
+    { "name": "Items", "description": "Game items and their attributes" },
+    { "name": "Locations", "description": "Game world locations" },
+    { "name": "Machines", "description": "TM and HM machines" },
+    { "name": "Evolution", "description": "Evolution chains and triggers" },
+    { "name": "Games", "description": "Game versions and generations" }
+  ],
+  "paths": {
+    "/pokemon": {
+      "get": {
+        "operationId": "listPokemon",
+        "summary": "List Pokémon",
+        "description": "Returns a paginated list of all Pokémon. Use `limit` and `offset` to paginate through results.",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results to return per page (max 100)",
+            "schema": { "type": "integer", "default": 20, "minimum": 1, "maximum": 100 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Number of results to skip for pagination",
+            "schema": { "type": "integer", "default": 0, "minimum": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A paginated list of Pokémon",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer", "description": "Total number of Pokémon" },
+                    "next": { "type": "string", "nullable": true, "description": "URL for the next page" },
+                    "previous": { "type": "string", "nullable": true, "description": "URL for the previous page" },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pokemon/{nameOrId}": {
+      "get": {
+        "operationId": "getPokemon",
+        "summary": "Get Pokémon",
+        "description": "Returns detailed data for a specific Pokémon by name or ID. Includes stats, types, abilities, sprites, and more.",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "The name or ID of the Pokémon (e.g., 'pikachu' or '25')",
+            "schema": { "type": "string" },
+            "example": "pikachu"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed Pokémon data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "base_experience": { "type": "integer" },
+                    "height": { "type": "integer", "description": "Height in decimetres" },
+                    "weight": { "type": "integer", "description": "Weight in hectograms" },
+                    "types": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "slot": { "type": "integer" },
+                          "type": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" },
+                              "url": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "stats": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "base_stat": { "type": "integer" },
+                          "stat": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" },
+                              "url": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "abilities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "is_hidden": { "type": "boolean" },
+                          "ability": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" },
+                              "url": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "sprites": {
+                      "type": "object",
+                      "properties": {
+                        "front_default": { "type": "string", "nullable": true },
+                        "front_shiny": { "type": "string", "nullable": true },
+                        "back_default": { "type": "string", "nullable": true }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pokémon not found"
+          }
+        }
+      }
+    },
+    "/pokemon-species/{nameOrId}": {
+      "get": {
+        "operationId": "getPokemonSpecies",
+        "summary": "Get Pokémon Species",
+        "description": "Returns species data including evolution chain, flavor text, habitats, and more.",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "The name or ID of the Pokémon species",
+            "schema": { "type": "string" },
+            "example": "bulbasaur"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Pokémon species data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "is_legendary": { "type": "boolean" },
+                    "is_mythical": { "type": "boolean" },
+                    "evolution_chain": {
+                      "type": "object",
+                      "properties": {
+                        "url": { "type": "string" }
+                      }
+                    },
+                    "flavor_text_entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "flavor_text": { "type": "string" },
+                          "language": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Species not found" }
+        }
+      }
+    },
+    "/type": {
+      "get": {
+        "operationId": "listTypes",
+        "summary": "List Types",
+        "description": "Returns a list of all Pokémon types (fire, water, grass, etc.).",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Pokémon types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer" },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/type/{nameOrId}": {
+      "get": {
+        "operationId": "getType",
+        "summary": "Get Type",
+        "description": "Returns type matchup data including damage relations and Pokémon of this type.",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Type name or ID (e.g., 'fire' or '10')",
+            "schema": { "type": "string" },
+            "example": "fire"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Type data with damage relations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "damage_relations": {
+                      "type": "object",
+                      "properties": {
+                        "double_damage_from": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" } } } },
+                        "double_damage_to": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" } } } },
+                        "half_damage_from": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" } } } },
+                        "half_damage_to": { "type": "array", "items": { "type": "object", "properties": { "name": { "type": "string" } } } }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Type not found" }
+        }
+      }
+    },
+    "/ability/{nameOrId}": {
+      "get": {
+        "operationId": "getAbility",
+        "summary": "Get Ability",
+        "description": "Returns data for a specific Pokémon ability.",
+        "tags": ["Pokémon"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Ability name or ID",
+            "schema": { "type": "string" },
+            "example": "overgrow"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ability data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "effect_entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "effect": { "type": "string" },
+                          "short_effect": { "type": "string" },
+                          "language": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Ability not found" }
+        }
+      }
+    },
+    "/berry": {
+      "get": {
+        "operationId": "listBerries",
+        "summary": "List Berries",
+        "description": "Returns a paginated list of all berries.",
+        "tags": ["Berries"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Pagination offset",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of berries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer" },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/berry/{nameOrId}": {
+      "get": {
+        "operationId": "getBerry",
+        "summary": "Get Berry",
+        "description": "Returns detailed data for a specific berry including growth time, firmness, and flavors.",
+        "tags": ["Berries"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Berry name or ID",
+            "schema": { "type": "string" },
+            "example": "cheri"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Berry data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "growth_time": { "type": "integer" },
+                    "max_harvest": { "type": "integer" },
+                    "size": { "type": "integer" },
+                    "firmness": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    },
+                    "flavors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "potency": { "type": "integer" },
+                          "flavor": {
+                            "type": "object",
+                            "properties": {
+                              "name": { "type": "string" },
+                              "url": { "type": "string" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Berry not found" }
+        }
+      }
+    },
+    "/move": {
+      "get": {
+        "operationId": "listMoves",
+        "summary": "List Moves",
+        "description": "Returns a paginated list of all Pokémon moves.",
+        "tags": ["Moves"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "schema": { "type": "integer", "default": 0 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of moves",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer" },
+                    "results": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/move/{nameOrId}": {
+      "get": {
+        "operationId": "getMove",
+        "summary": "Get Move",
+        "description": "Returns detailed move data including power, accuracy, PP, type, and damage class.",
+        "tags": ["Moves"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Move name or ID",
+            "schema": { "type": "string" },
+            "example": "thunderbolt"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Move data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "accuracy": { "type": "integer", "nullable": true },
+                    "power": { "type": "integer", "nullable": true },
+                    "pp": { "type": "integer" },
+                    "priority": { "type": "integer" },
+                    "type": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    },
+                    "damage_class": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" }
+                      }
+                    },
+                    "effect_entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "effect": { "type": "string" },
+                          "short_effect": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Move not found" }
+        }
+      }
+    },
+    "/item/{nameOrId}": {
+      "get": {
+        "operationId": "getItem",
+        "summary": "Get Item",
+        "description": "Returns data for a specific game item.",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Item name or ID",
+            "schema": { "type": "string" },
+            "example": "potion"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "cost": { "type": "integer" },
+                    "effect_entries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "effect": { "type": "string" },
+                          "short_effect": { "type": "string" }
+                        }
+                      }
+                    },
+                    "sprites": {
+                      "type": "object",
+                      "properties": {
+                        "default": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Item not found" }
+        }
+      }
+    },
+    "/location/{id}": {
+      "get": {
+        "operationId": "getLocation",
+        "summary": "Get Location",
+        "description": "Returns data about a specific location in the Pokémon world.",
+        "tags": ["Locations"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Location ID",
+            "schema": { "type": "integer" },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Location data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "region": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "url": { "type": "string" }
+                      }
+                    },
+                    "areas": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Location not found" }
+        }
+      }
+    },
+    "/evolution-chain/{id}": {
+      "get": {
+        "operationId": "getEvolutionChain",
+        "summary": "Get Evolution Chain",
+        "description": "Returns the complete evolution chain for a given chain ID.",
+        "tags": ["Evolution"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Evolution chain ID",
+            "schema": { "type": "integer" },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evolution chain data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "chain": {
+                      "type": "object",
+                      "properties": {
+                        "species": {
+                          "type": "object",
+                          "properties": {
+                            "name": { "type": "string" },
+                            "url": { "type": "string" }
+                          }
+                        },
+                        "evolves_to": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "species": {
+                                "type": "object",
+                                "properties": {
+                                  "name": { "type": "string" }
+                                }
+                              },
+                              "evolution_details": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "min_level": { "type": "integer", "nullable": true },
+                                    "trigger": {
+                                      "type": "object",
+                                      "properties": {
+                                        "name": { "type": "string" }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Evolution chain not found" }
+        }
+      }
+    },
+    "/generation/{nameOrId}": {
+      "get": {
+        "operationId": "getGeneration",
+        "summary": "Get Generation",
+        "description": "Returns data about a specific game generation.",
+        "tags": ["Games"],
+        "parameters": [
+          {
+            "name": "nameOrId",
+            "in": "path",
+            "required": true,
+            "description": "Generation name or ID",
+            "schema": { "type": "string" },
+            "example": "generation-i"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generation data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "integer" },
+                    "name": { "type": "string" },
+                    "main_region": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" }
+                      }
+                    },
+                    "pokemon_species": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": { "type": "string" },
+                          "url": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Generation not found" }
+        }
+      }
+    }
+  }
+}

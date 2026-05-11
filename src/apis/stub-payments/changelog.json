@@ -1,0 +1,9 @@
+[
+  {
+    "version": "1.0.0",
+    "date": "2024-11-01",
+    "type": "feature",
+    "title": "Initial Release",
+    "description": "Launched Demo Payments API with payment processing, customer management, and refund support."
+  }
+]

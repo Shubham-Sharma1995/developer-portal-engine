@@ -1,0 +1,30 @@
+[
+  {
+    "version": "2.0.0",
+    "date": "2024-01-15",
+    "type": "feature",
+    "title": "API v2 Stable Release",
+    "description": "Complete redesign with standardized resource paths, consistent pagination, and comprehensive type coverage."
+  },
+  {
+    "version": "2.0.1",
+    "date": "2024-03-20",
+    "type": "fix",
+    "title": "Sprite URL Corrections",
+    "description": "Fixed broken sprite URLs for generation 5+ Pokémon. All sprite endpoints now return valid HTTPS URLs."
+  },
+  {
+    "version": "2.1.0",
+    "date": "2024-06-01",
+    "type": "feature",
+    "title": "Added Evolution Chain Details",
+    "description": "Evolution chain endpoint now includes min_level, trigger type, and held item requirements for each evolution step."
+  },
+  {
+    "version": "2.2.0",
+    "date": "2024-09-15",
+    "type": "deprecation",
+    "title": "Legacy v1 Endpoints Deprecated",
+    "description": "All v1 API endpoints are now deprecated and will be removed in Q1 2025. Please migrate to v2."
+  }
+]

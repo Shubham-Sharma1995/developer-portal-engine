@@ -1,0 +1,203 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Demo Payments API",
+    "version": "1.0.0",
+    "description": "A fictional payments API demonstrating portal extensibility. Process payments, manage customers, and handle refunds."
+  },
+  "servers": [
+    { "url": "https://api.Demo.dev/v1", "description": "Production" },
+    { "url": "https://sandbox.Demo.dev/v1", "description": "Sandbox" }
+  ],
+  "tags": [
+    { "name": "Payments", "description": "Create and manage payments" },
+    { "name": "Customers", "description": "Manage customer records" },
+    { "name": "Refunds", "description": "Process refunds" }
+  ],
+  "paths": {
+    "/payments": {
+      "get": {
+        "operationId": "listPayments",
+        "summary": "List Payments",
+        "description": "Returns a paginated list of payments for your account.",
+        "tags": ["Payments"],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": { "type": "integer", "default": 20 }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Filter by payment status",
+            "schema": { "type": "string", "enum": ["pending", "completed", "failed", "refunded"] }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of payments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string" },
+                          "amount": { "type": "integer", "description": "Amount in cents" },
+                          "currency": { "type": "string" },
+                          "status": { "type": "string" },
+                          "created_at": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    },
+                    "has_more": { "type": "boolean" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized — invalid API key" }
+        }
+      },
+      "post": {
+        "operationId": "createPayment",
+        "summary": "Create Payment",
+        "description": "Creates a new payment intent.",
+        "tags": ["Payments"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["amount", "currency"],
+                "properties": {
+                  "amount": { "type": "integer", "description": "Amount in cents", "minimum": 50 },
+                  "currency": {
+                    "type": "string",
+                    "description": "Three-letter ISO currency code",
+                    "enum": ["usd", "eur", "gbp", "inr"]
+                  },
+                  "description": { "type": "string" },
+                  "customer_id": { "type": "string" },
+                  "metadata": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": { "type": "string" },
+                    "amount": { "type": "integer" },
+                    "currency": { "type": "string" },
+                    "status": { "type": "string", "enum": ["pending"] },
+                    "client_secret": { "type": "string" },
+                    "created_at": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Invalid request body" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/payments/{id}": {
+      "get": {
+        "operationId": "getPayment",
+        "summary": "Get Payment",
+        "description": "Retrieves a payment by ID.",
+        "tags": ["Payments"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "Payment ID",
+            "schema": { "type": "string" },
+            "example": "pay_1234567890"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Payment details" },
+          "404": { "description": "Payment not found" }
+        }
+      }
+    },
+    "/customers": {
+      "post": {
+        "operationId": "createCustomer",
+        "summary": "Create Customer",
+        "description": "Creates a new customer record.",
+        "tags": ["Customers"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "name": { "type": "string" },
+                  "phone": { "type": "string" },
+                  "metadata": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Customer created" },
+          "400": { "description": "Invalid request" }
+        }
+      }
+    },
+    "/refunds": {
+      "post": {
+        "operationId": "createRefund",
+        "summary": "Create Refund",
+        "description": "Refunds a completed payment.",
+        "tags": ["Refunds"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["payment_id"],
+                "properties": {
+                  "payment_id": { "type": "string" },
+                  "amount": { "type": "integer", "description": "Partial refund amount in cents" },
+                  "reason": {
+                    "type": "string",
+                    "enum": ["duplicate", "fraudulent", "requested_by_customer"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Refund created" },
+          "400": { "description": "Invalid refund request" },
+          "404": { "description": "Payment not found" }
+        }
+      }
+    }
+  }
+}

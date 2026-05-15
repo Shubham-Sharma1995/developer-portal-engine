@@ -42,3 +42,4 @@ export const API_REGISTRY: ApiDefinition[] = [
 ];
 ```
 The entire UI (Sidebar, Specs, Markdown Docs, Sandbox Forms, Search) will automatically render the new API!
+ 
